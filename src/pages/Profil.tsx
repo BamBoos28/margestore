@@ -1,0 +1,195 @@
+// App.tsx
+import BottomNavbar from "../components/BottomNavbar";
+import IconList from "../components/IconList";
+import { useToast } from "../components/ToastProvider";
+import { useEffect, useState } from "react";
+
+/** Type untuk nilai form */
+type FormValues = {
+  nama: string;
+  alamat: string;
+  detailRumah: string;
+  nomorWa: string;
+};
+
+const STORAGE_KEY = "userData";
+
+/** Validasi nomor WA: 10-15 digit (hanya angka) */
+function isValidPhone(phone: string) {
+  return /^[0-9]{10,15}$/.test(phone);
+}
+
+export default function Profile() {
+  const [formValues, setFormValues] = useState<FormValues>({
+    nama: "",
+    alamat: "",
+    detailRumah: "",
+    nomorWa: "",
+  });
+
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setFormValues(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleSave() {
+    const { nama, alamat, nomorWa } = formValues;
+
+    if (!nama.trim() || !alamat.trim() || !nomorWa.trim()) {
+      showToast("Nama, Alamat, dan Nomor WA wajib diisi.", {
+        variant: "error",
+        duration: 1800,
+      });
+      return;
+    }
+
+    if (!isValidPhone(nomorWa)) {
+      showToast("Nomor WA harus 10–15 digit angka.", {
+        variant: "error",
+        duration: 1800,
+      });
+      return;
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formValues));
+
+    showToast("Data berhasil disimpan.", {
+      variant: "success",
+      duration: 1800,
+    });
+  }
+
+  function handleReset() {
+    setFormValues({
+      nama: "",
+      alamat: "",
+      detailRumah: "",
+      nomorWa: "",
+    });
+
+    localStorage.removeItem(STORAGE_KEY);
+
+    showToast("Data berhasil dihapus.", {
+      variant: "success",
+      duration: 1800,
+    });
+  }
+
+  return (
+    <>
+      <div className=" hidden min-h-screen items-center justify-center px-6 xl:flex">
+        <div className="max-w-md rounded-xl bg-white p-6 text-center shadow">
+          <h1 className="text-primary mb-2 text-xl font-semibold">
+            Mobile Only
+          </h1>
+          <p className="text-main text-sm">
+            Aplikasi ini hanya dapat digunakan pada perangkat mobile.
+            <br />
+            Silakan buka kembali menggunakan smartphone.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-light xl:hidden min-h-screen mx-auto max-w-4xl  px-4 py-6">
+        <div className=" rounded-xl bg-white p-6 shadow-md">
+          <header className="mb-6 text-center">
+            <h1 className="text-main text-xl font-bold tracking-widest">
+              Form Checkout
+            </h1>
+            <p className="text-main mt-1 text-sm opacity-70">
+              Simpan detail pengiriman Anda
+            </p>
+          </header>
+
+          <div className="space-y-5">
+            {/* Nama */}
+            <div>
+              <label className="text-main mb-1 block text-xs font-semibold uppercase">
+                Nama *
+              </label>
+              <input
+                name="nama"
+                value={formValues.nama}
+                onChange={handleChange}
+                className="border-gray-light w-full rounded-md border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--action-green)]"
+              />
+            </div>
+
+            {/* Alamat */}
+            <div>
+              <label className="text-main mb-1 block text-xs font-semibold uppercase">
+                Alamat *
+              </label>
+              <input
+                name="alamat"
+                value={formValues.alamat}
+                onChange={handleChange}
+                className="border-gray-light w-full rounded-md border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--action-green)] mb-2"
+              />
+              <input
+                name="detailRumah"
+                value={formValues.detailRumah}
+                onChange={handleChange}
+                placeholder="Detail rumah (opsional)"
+                className="border-gray-light w-full rounded-md border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--action-green)]"
+              />
+            </div>
+
+            {/* Nomor WA */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="text-main mb-1 block text-xs font-semibold uppercase">
+                  Nomor WA *
+                </label>
+                <input
+                  name="nomorWa"
+                  value={formValues.nomorWa}
+                  onChange={handleChange}
+                  inputMode="numeric"
+                  className="border-gray-light w-full rounded-md border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--action-green)]"
+                />
+              </div>
+
+              <div className="flex items-end gap-3">
+                <button
+                  onClick={handleSave}
+                  className="bg-action rounded-md px-4 py-2 font-semibold text-white hover:opacity-90"
+                >
+                  Simpan
+                </button>
+
+                <button
+                  onClick={handleReset}
+                  className="border-gray-light text-main hover:bg-gray-light rounded-md border border-gray-200 px-4 py-2"
+                >
+                  Hapus
+                </button>
+
+                <a href="/contact" className="flex bg-yellow sm:pr-2 pr-0 rounded-md items-center justify-center gap-2">
+                  <img src="phone.svg" alt="Contact" className="h-10" />
+                  <h1 className="hidden sm:block font-extrabold">Kontak Kami</h1>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <footer className="text-main mt-6 text-center text-xs opacity-60">
+            Data disimpan secara lokal di perangkat ini
+          </footer>
+        </div>
+
+        <IconList />
+        <BottomNavbar />
+      </div>
+    </>
+  );
+}
