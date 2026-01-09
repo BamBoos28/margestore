@@ -1,7 +1,7 @@
 // pages/Contact.tsx
 import BottomNavbar from "../components/BottomNavbar";
 import { useToast } from "../components/ToastProvider";
-import { useState, type JSX } from "react";
+import { useState } from "react";
 
 /** ---------- Types ---------- */
 type ProfileItem = {
@@ -10,7 +10,7 @@ type ProfileItem = {
   desc: string;
 };
 
-export default function Contact(): JSX.Element {
+export default function Contact() {
   const { showToast } = useToast();
 
   /** ---------- Profile Info ---------- */
