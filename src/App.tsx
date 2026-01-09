@@ -1,12 +1,12 @@
 // App.tsx
 import { Suspense, lazy, type JSX  } from "react";
 import { Routes, Route } from "react-router-dom";
+import Contact from "./pages/Contact";
 
 /** Lazy-loaded pages */
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profil = lazy(() => import("./pages/Profil"));
 const Cart = lazy(() => import("./pages/Cart"));
-const Contact = lazy(() => import("./pages/Contact"));
 
 /** Simple fallback shown while a page chunk is loading */
 function LoadingFallback() {
